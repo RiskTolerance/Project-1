@@ -6,6 +6,8 @@ let bombs;
 let score = 0;
 let gameOver = false;
 let scoreText;
+let camera;
+let map;
 
 class SceneMain extends Phaser.Scene {
 
