@@ -2,12 +2,10 @@ let game;
 window.onload = function(){
     let config = {
         type: Phaser.AUTO,
-        width: 720,
-        height: 480,
+        width: 1280,
+        height: 720,
         parent: 'phaser-game',
-        scene: [ SceneTitle, SceneMain ]
+        scene: [ SceneMain ]
         };
         game = new Phaser.Game(config);
 }
-
-    game = new Phaser.Game(config);
