@@ -4,14 +4,24 @@ let structures;
 let terrain;
 let player;
 let player2;
+let demon;
 let structuresLayer;
 let terrainLayer;
-let lastDirectionCult = 1;
+let lastDirectionCult = 1; //track last movement direction to set idle animations
 let lastDirectionGoat = 0;
 let spacebar;
 let Cee;
 let Emm;
 let leader = '';
+let playerState = 1; //alive = 1, dead = 0
+let player2State = 1;
+let playerWin = 0; //win =1
+let player2Win = 0;
+let gameover = false;
+
+let i = 0.07;
+let demonSpeed = -1;
+let evilOrbs;
 
 //control variables
 let keyboard;
@@ -23,6 +33,7 @@ class SceneMain extends Phaser.Scene {
     preload() {
         //load images or sounds
         this.load.image('background','/images/Backgrounds/cavebg.png');
+        this.load.image('overworldbg','/images/Backgrounds/overworld-wgrad.png');
         this.load.tilemapTiledJSON('map','/images/Environment/Tilesets/reset/mapv2.json');
         this.load.image('structuresPNG', '/images/Environment/Tilesets/reset/Structures.png', {frameWidth: 32, frameHeight: 32});
         this.load.image('terrainPNG', '/images/Environment/Tilesets/reset/Terrain.png', {frameWidth: 32, frameHeight: 32});
@@ -30,19 +41,23 @@ class SceneMain extends Phaser.Scene {
         this.load.spritesheet('cultistIdle', '/images/Characters/cultist/rogue like idle_animation 6frames 40px.png', {frameWidth: 40, frameHeight: 40});
         this.load.spritesheet('goatRun', '/images/Characters/goat/goat walk 6frames 40px.png', {frameWidth: 40, frameHeight: 40});
         this.load.spritesheet('goatIdle', '/images/Characters/goat/goat idle 4frames 40px.png', {frameWidth: 40, frameHeight: 40});
+        this.load.spritesheet('demonTemp', '/images/Characters/demon/DemonTemplate 3frames 1280x400px.png', {frameWidth: 1280, frameHeight: 400});
     }
     
     create() {
         //define objects
-        console.log('Ready!');
+  
         //console.log(this.cache.tilemap.get('map').data);
         this.map = this.make.tilemap({key:'map'});
     
+        console.log('Ready!', this)//,  this.map.layers[1].tilemapLayer.getTileAtWorldXY(100,100));
+
         structures = this.map.addTilesetImage('TiledStructuresTileset','structuresPNG');
         terrain = this.map.addTilesetImage('TiledTerrainTileset','terrainPNG');
         
         //add the bg
         bg = this.add.image(this.map.widthInPixels/2, this.map.heightInPixels/4, 'background');
+        this.add.image(640, 480, 'overworldbg');
 
         //add the Tiled layers
         structuresLayer = this.map.createDynamicLayer('TiledStructuresLayer', structures, 0, 0);
@@ -53,19 +68,76 @@ class SceneMain extends Phaser.Scene {
         this.physics.world.bounds.height = structuresLayer.height;
 
         //add the player
-        player = this.physics.add.sprite(this.map.widthInPixels/1.5, this.map.heightInPixels - 150, 'cultistIdle');
+        player = this.physics.add.sprite(this.map.widthInPixels/1.5, this.map.heightInPixels - 300, 'cultistIdle');
         player.setCollideWorldBounds(true); 
         //add second player
-        player2 = this.physics.add.sprite(this.map.widthInPixels/3, this.map.heightInPixels - 150, 'goatRun');
+        player2 = this.physics.add.sprite(this.map.widthInPixels/3, this.map.heightInPixels - 300, 'goatRun');
         player2.setCollideWorldBounds(true); 
+        //add the demon wall
+        demon = this.physics.add.sprite(this.map.widthInPixels/2, this.map.heightInPixels, 'demonTemp')
+        demon.body.setAllowGravity(false);
+        //this is for applying physics to multiple orbs?
+        evilOrbs = this.physics.add.group(); 
         //make the player collide with the foreground layer
-        terrainLayer.setCollisionByExclusion([-1]); //sets the entire terrainLayer as a collider?
-        structuresLayer.setCollisionByProperty({ collides: true });
-        this.physics.add.collider(terrainLayer, player); //makes the player collide with the terrain layer
+        terrainLayer.setCollisionByProperty({ collides: true }); //sets the entire terrainLayer as a collider? Tbh I don't know how this works.
+        structuresLayer.setCollisionByProperty({ collides: true }); // <-- convert to this for all layers
+
+        //functions 
+
+        //orb kills player
+        function splat () {
+
+        };
+
+        //orb kills player2
+        function blep () {
+
+        };
+
+        //wall kills player
+        function nom () {
+            console.log('nom!')
+            player.disableBody(true, true);
+            playerState = 0;
+            outcome();
+        };
+
+        //wall kills player2
+        function chomp () {
+            console.log('chomp!')
+            player2.disableBody(true, true);
+            player2State = 0;
+            outcome();
+        };
+
+        //players win/lose
+        function outcome () {
+            if (playerState === 0 && player2State === 0) {
+                alert('PLAYERS BOTH LOSE!')
+                this.physics.pause();
+            } else if (playerWin === 1){
+                alert('CULTIST IS THE ONLY SURVIVOR!');
+                this.physics.pause();
+            } else if (player2Win === 1){
+                alert('GOAT IS THE ONLY SURVIVOR!');
+                this.physics.pause();
+            } else {
+                console.log('the game continues!');
+            };
+        };
+        //shoot orb
+        function pew () {
+
+        };
+        
+        //add collisions 
+        this.physics.add.collider(terrainLayer, player); 
         this.physics.add.collider(structuresLayer, player);
-        this.physics.add.collider(terrainLayer, player2); //makes the player collide with the terrain layer
+        this.physics.add.collider(terrainLayer, player2); 
         this.physics.add.collider(structuresLayer, player2);
         this.physics.add.collider(player, player2);
+        this.physics.add.collider(demon, player, nom, null, this); //add functions here 
+        this.physics.add.collider(demon, player2, chomp, null, this);
 
         //keyboard = this.input.keyboard.createCursorKeys();
         keyboard = this.input.keyboard.addKeys('RIGHT,LEFT,DOWN,UP,A,W,S,D');
@@ -126,6 +198,15 @@ class SceneMain extends Phaser.Scene {
             this.anims.create({
                 key: 'goatRightIdle',
                 frames: this.anims.generateFrameNumbers('goatIdle', { start: 2, end: 4}),
+                frameRate: 3,
+                repeat: -1
+            });
+
+            //demon
+
+            this.anims.create({
+                key: 'demonWall',
+                frames: this.anims.generateFrameNumbers('demonTemp', { start: 0, end: 3}),
                 frameRate: 3,
                 repeat: -1
             });
@@ -208,16 +289,56 @@ class SceneMain extends Phaser.Scene {
             console.log(player2.body.position.x); 
             player2.body.setVelocityY(-400);
         }
-        // dash! Uhhh... Blink?
         
+        // Dash! Uhhh... Blink?
         if (keyboard.UP.isDown && Phaser.Input.Keyboard.JustDown(Cee))
         {
-            //somehow check for collision?
+            //somehow check for collision? Currently just checking for existance. Is that enough??
+            console.log(
+                terrainLayer.getTileAtWorldXY(player.body.position.x+20,player.body.position.y-100),
+                !terrainLayer.getTileAtWorldXY(player.body.position.x+20,player.body.position.y-100)
+                )
 
-            //blink
-            player.setPosition((player.body.position.x + 20), (player.body.position.y - 100));
+            if(!terrainLayer.getTileAtWorldXY(player.body.position.x+20,player.body.position.y-100)){
+                console.log('blink!')
+                player.setPosition((player.body.position.x + 20), (player.body.position.y - 100));
+            }
+            // console.log(
+            //     player.body.position,
+            //     terrainLayer.getTileAtWorldXY(player.body.position.x,player.body.position.y,true),
+            //     structuresLayer.getTileAtWorldXY(player.body.position.x,player.body.position.y,true)
+            // )
+            // //blink
+            // //console.log(player.body((player.body.position.x + 20), (player.body.position.y - 100)));
+            // player.setPosition((player.body.position.x + 20), (player.body.position.y - 100));
+
+            // console.log(
+            //     player.body.position,
+            //     terrainLayer.getTileAtWorldXY(player.body.position.x,player.body.position.y,true),
+            //     structuresLayer.getTileAtWorldXY(player.body.position.x,player.body.position.y,true)
+            // )
         }
         
+        // demon movement
+        // demonSpeed -= i;
+        demon.anims.play('demonWall', true);
+        // demon.body.setVelocityY(demonSpeed);
+
+        //check for win
+        if (player.body.position.y < 550){
+            playerWin = 1;
+            console.log('Cultist has won!')
+        } else if (player2.body.position.y < 550){
+            console.log('Goat has won!')
+            player2Win = 1;
+        };
+
+        if (playerWin === 1 && player2Win === 1) {
+            alert('BOTH PLAYERS WIN!');
+            this.physics.pause();
+        }
+
+        // reffor altering velocity
         // if (Phaser.Input.Keyboard.JustDown(Cee))
         // {
         //     //window.p = player;
