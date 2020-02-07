@@ -18,7 +18,7 @@ let player2State = 1;
 let playerWin = 0; //win =1
 let player2Win = 0;
 let gameover = false;
-
+let win;
 let i = 0.07;
 let demonSpeed = -1;
 let evilOrbs;
@@ -34,6 +34,7 @@ class SceneMain extends Phaser.Scene {
         //load images or sounds
         this.load.image('background','/images/Backgrounds/cavebg.png');
         this.load.image('overworldbg','/images/Backgrounds/overworld-wgrad.png');
+        this.load.image('winArea', '/images/winArea.png');
         this.load.tilemapTiledJSON('map','/images/Environment/Tilesets/reset/mapv2.json');
         this.load.image('structuresPNG', '/images/Environment/Tilesets/reset/Structures.png', {frameWidth: 32, frameHeight: 32});
         this.load.image('terrainPNG', '/images/Environment/Tilesets/reset/Terrain.png', {frameWidth: 32, frameHeight: 32});
@@ -70,17 +71,24 @@ class SceneMain extends Phaser.Scene {
         //add the player
         player = this.physics.add.sprite(this.map.widthInPixels/1.5, this.map.heightInPixels - 300, 'cultistIdle');
         player.setCollideWorldBounds(true); 
+
         //add second player
         player2 = this.physics.add.sprite(this.map.widthInPixels/3, this.map.heightInPixels - 300, 'goatRun');
         player2.setCollideWorldBounds(true); 
+
         //add the demon wall
         demon = this.physics.add.sprite(this.map.widthInPixels/2, this.map.heightInPixels, 'demonTemp')
         demon.body.setAllowGravity(false);
+
+        //add win zone
+        win = this.add.image(this.map.widthInPixels/2, 225, 'winArea');
+
         //this is for applying physics to multiple orbs?
         evilOrbs = this.physics.add.group(); 
-        //make the player collide with the foreground layer
-        terrainLayer.setCollisionByProperty({ collides: true }); //sets the entire terrainLayer as a collider? Tbh I don't know how this works.
-        structuresLayer.setCollisionByProperty({ collides: true }); // <-- convert to this for all layers
+
+        //Tiled colliders
+        terrainLayer.setCollisionByProperty({ collides: true });
+        structuresLayer.setCollisionByProperty({ collides: true });
 
         //functions 
 
@@ -125,6 +133,7 @@ class SceneMain extends Phaser.Scene {
                 console.log('the game continues!');
             };
         };
+        
         //shoot orb
         function pew () {
 
@@ -324,19 +333,30 @@ class SceneMain extends Phaser.Scene {
         demon.anims.play('demonWall', true);
         // demon.body.setVelocityY(demonSpeed);
 
-        //check for win
-        if (player.body.position.y < 550){
-            playerWin = 1;
-            console.log('Cultist has won!')
-        } else if (player2.body.position.y < 550){
-            console.log('Goat has won!')
-            player2Win = 1;
-        };
+        //add win state
 
-        if (playerWin === 1 && player2Win === 1) {
-            alert('BOTH PLAYERS WIN!');
-            this.physics.pause();
+        if (player.body.position.y < 430){
+            playerWin = 1;
+        } else if (player2.body.position.y < 430){
+            player2Win = 1;
         }
+
+        //check for win
+
+        if (player.body.position.y < 451 || player2.body.position.y < 451){
+            if (playerWin === 1 && player2Win === 1) {
+                alert('PLAYERS BOTH WIN!')
+                this.physics.pause();
+            } else if (playerState === 0){
+                alert('GOAT IS THE ONLY SURVIVOR!');
+                this.physics.pause();
+            } else if (playerState === 0){
+                alert('GOAT IS THE ONLY SURVIVOR!');
+                this.physics.pause();
+            } else {
+                console.log('the game continues!');
+            };
+        };
 
         // reffor altering velocity
         // if (Phaser.Input.Keyboard.JustDown(Cee))
