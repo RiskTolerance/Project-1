@@ -18,7 +18,6 @@ let player2State = 1;
 let playerWin = 0; //win =1
 let player2Win = 0;
 let gameover = false;
-let win;
 let i = 0.07;
 let demonSpeed = -1;
 let evilOrbs;
@@ -34,7 +33,6 @@ class SceneMain extends Phaser.Scene {
         //load images or sounds
         this.load.image('background','images/Backgrounds/cavebg.png');
         this.load.image('overworldbg','images/Backgrounds/overworld-wgrad.png');
-        this.load.image('winArea', 'images/winArea.png');
         this.load.tilemapTiledJSON('map','images/Environment/Tilesets/reset/mapv2.json');
         this.load.image('structuresPNG', 'images/Environment/Tilesets/reset/Structures.png', {frameWidth: 32, frameHeight: 32});
         this.load.image('terrainPNG', 'images/Environment/Tilesets/reset/Terrain.png', {frameWidth: 32, frameHeight: 32});
@@ -79,9 +77,6 @@ class SceneMain extends Phaser.Scene {
         //add the demon wall
         demon = this.physics.add.sprite(this.map.widthInPixels/2, this.map.heightInPixels, 'demonTemp')
         demon.body.setAllowGravity(false);
-
-        //add win zone
-        win = this.add.image(this.map.widthInPixels/2, 225, 'winArea');
 
         //this is for applying physics to multiple orbs?
         evilOrbs = this.physics.add.group(); 
@@ -335,23 +330,23 @@ class SceneMain extends Phaser.Scene {
 
         //add win state
 
-        if (player.body.position.y < 430){
+        if (player.body.position.y < 451){
             playerWin = 1;
-        } else if (player2.body.position.y < 430){
+        } else if (player2.body.position.y < 451){
             player2Win = 1;
         }
 
         //check for win
 
-        if (player.body.position.y < 451 || player2.body.position.y < 451){
+        if (player.body.position.y < 450 || player2.body.position.y < 450){
             if (playerWin === 1 && player2Win === 1) {
                 alert('PLAYERS BOTH WIN!')
                 this.physics.pause();
             } else if (playerState === 0){
                 alert('GOAT IS THE ONLY SURVIVOR!');
                 this.physics.pause();
-            } else if (playerState === 0){
-                alert('GOAT IS THE ONLY SURVIVOR!');
+            } else if (player2State === 0){
+                alert('CULTIST IS THE ONLY SURVIVOR!');
                 this.physics.pause();
             } else {
                 console.log('the game continues!');
