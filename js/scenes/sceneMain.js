@@ -32,17 +32,17 @@ class SceneMain extends Phaser.Scene {
     }
     preload() {
         //load images or sounds
-        this.load.image('background','/images/Backgrounds/cavebg.png');
-        this.load.image('overworldbg','/images/Backgrounds/overworld-wgrad.png');
-        this.load.image('winArea', '/images/winArea.png');
-        this.load.tilemapTiledJSON('map','/images/Environment/Tilesets/reset/mapv2.json');
-        this.load.image('structuresPNG', '/images/Environment/Tilesets/reset/Structures.png', {frameWidth: 32, frameHeight: 32});
-        this.load.image('terrainPNG', '/images/Environment/Tilesets/reset/Terrain.png', {frameWidth: 32, frameHeight: 32});
-        this.load.spritesheet('cultistRun', '/images/Characters/cultist/cultist run_animation 12frames 40px.png', {frameWidth: 40, frameHeight: 40});
-        this.load.spritesheet('cultistIdle', '/images/Characters/cultist/rogue like idle_animation 6frames 40px.png', {frameWidth: 40, frameHeight: 40});
-        this.load.spritesheet('goatRun', '/images/Characters/goat/goat walk 6frames 40px.png', {frameWidth: 40, frameHeight: 40});
-        this.load.spritesheet('goatIdle', '/images/Characters/goat/goat idle 4frames 40px.png', {frameWidth: 40, frameHeight: 40});
-        this.load.spritesheet('demonTemp', '/images/Characters/demon/DemonTemplate 3frames 1280x400px.png', {frameWidth: 1280, frameHeight: 400});
+        this.load.image('background','images/Backgrounds/cavebg.png');
+        this.load.image('overworldbg','images/Backgrounds/overworld-wgrad.png');
+        this.load.image('winArea', 'images/winArea.png');
+        this.load.tilemapTiledJSON('map','images/Environment/Tilesets/reset/mapv2.json');
+        this.load.image('structuresPNG', 'images/Environment/Tilesets/reset/Structures.png', {frameWidth: 32, frameHeight: 32});
+        this.load.image('terrainPNG', 'images/Environment/Tilesets/reset/Terrain.png', {frameWidth: 32, frameHeight: 32});
+        this.load.spritesheet('cultistRun', 'images/Characters/cultist/cultist run_animation 12frames 40px.png', {frameWidth: 40, frameHeight: 40});
+        this.load.spritesheet('cultistIdle', 'images/Characters/cultist/rogue like idle_animation 6frames 40px.png', {frameWidth: 40, frameHeight: 40});
+        this.load.spritesheet('goatRun', 'images/Characters/goat/goat walk 6frames 40px.png', {frameWidth: 40, frameHeight: 40});
+        this.load.spritesheet('goatIdle', 'images/Characters/goat/goat idle 4frames 40px.png', {frameWidth: 40, frameHeight: 40});
+        this.load.spritesheet('demonTemp', 'images/Characters/demon/DemonTemplate 3frames 1280x400px.png', {frameWidth: 1280, frameHeight: 400});
     }
     
     create() {
@@ -329,9 +329,9 @@ class SceneMain extends Phaser.Scene {
         }
         
         // demon movement
-        // demonSpeed -= i;
+        demonSpeed -= i;
         demon.anims.play('demonWall', true);
-        // demon.body.setVelocityY(demonSpeed);
+        demon.body.setVelocityY(demonSpeed);
 
         //add win state
 
